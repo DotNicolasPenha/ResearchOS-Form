@@ -21,6 +21,7 @@ func Run(databaseURL string) error {
 	}
 
 	dbURL := strings.Replace(databaseURL, "postgres://", "pgx5://", 1)
+	dbURL = strings.Replace(dbURL, "postgresql://", "pgx5://", 1)
 
 	m, err := migrate.NewWithSourceInstance("iofs", source, dbURL)
 	if err != nil {
