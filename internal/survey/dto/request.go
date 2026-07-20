@@ -83,15 +83,6 @@ func (r *SurveyRequest) Validate() string {
 	if r.Respondent.ResearchArea == "" {
 		return "respondent.researchArea is required"
 	}
-	if r.Respondent.Institution == "" {
-		return "respondent.institution is required"
-	}
-	if r.Respondent.Role == "" {
-		return "respondent.role is required"
-	}
-	if r.Respondent.Country == "" {
-		return "respondent.country is required"
-	}
 	if r.Respondent.Experience == "" {
 		return "respondent.experience is required"
 	}
@@ -101,38 +92,8 @@ func (r *SurveyRequest) Validate() string {
 	if r.Workflow.TimeConsumingStage == "" {
 		return "workflow.timeConsumingStage is required"
 	}
-	if r.Workflow.HoursOrganizingData == "" {
-		return "workflow.hoursOrganizingData is required"
-	}
-	if r.DataManagement.FileOrganization == "" {
-		return "data_management.fileOrganization is required"
-	}
-	if r.PainPoints.TimeConsumingTasks == "" {
-		return "pain_points.timeConsumingTasks is required"
-	}
-	if r.PainPoints.LastDifficulty == "" {
-		return "pain_points.lastDifficulty is required"
-	}
-	if r.PainPoints.WishedExistence == "" {
-		return "pain_points.wishedExistence is required"
-	}
-	if r.PainPoints.AutomateTask == "" {
-		return "pain_points.automateTask is required"
-	}
 	if r.Collaboration.TeamSize == "" {
 		return "collaboration.teamSize is required"
-	}
-	if r.Collaboration.DataSharing == "" {
-		return "collaboration.dataSharing is required"
-	}
-	if r.Collaboration.LostFiles == "" {
-		return "collaboration.lostFiles is required"
-	}
-	if r.Collaboration.BackupMethod == "" {
-		return "collaboration.backupMethod is required"
-	}
-	if r.AI.NeverTrustAI == "" {
-		return "artificial_intelligence.neverTrustAI is required"
 	}
 	if r.Contact.WillingToInterview == "" {
 		return "contact.willingToInterview is required"
