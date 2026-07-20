@@ -13,4 +13,10 @@ run:
 lint:
 	gofmt -s -w .
 
-.PHONY: up down build run lint
+stats-server:
+	node dev/server.js
+
+stats:
+	open http://localhost:3000
+
+.PHONY: up down build run lint stats-server stats

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesquisas - Estatísticas</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, sans-serif; background: #f5f5f5; color: #1a1a2e; padding: 2rem; }
+h1 { font-size: 1.5rem; margin-bottom: .25rem; }
+.subtitle { color: #666; margin-bottom: 2rem; font-size: .9rem; }
+.section { margin-bottom: 2.5rem; }
+.section h2 { font-size: 1.1rem; margin-bottom: 1rem; padding-bottom: .5rem; border-bottom: 2px solid #e0e0e0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1.5rem; }
+.card { background: #fff; border-radius: 8px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.card h3 { font-size: .95rem; color: #555; margin-bottom: 1rem; }
+table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+th { text-align: left; font-weight: 600; color: #888; font-size: .75rem; text-transform: uppercase; letter-spacing: .03em; padding-bottom: .5rem; }
+th:last-child, td:last-child { text-align: right; }
+td { padding: .35rem 0; border-bottom: 1px solid #f0f0f0; }
+tr:last-child td { border-bottom: none; }
+.bar-wrap { display: inline-block; width: 60px; height: 6px; background: #e0e0e0; border-radius: 3px; vertical-align: middle; margin-right: .5rem; }
+.bar { height: 6px; background: #4a6cf7; border-radius: 3px; }
+.num { font-variant-numeric: tabular-nums; }
+.empty, .error { text-align: center; padding: 3rem; color: #888; }
+.error { color: #d32f2f; }
+.loading { text-align: center; padding: 3rem; color: #888; }
+.total-badge { display: inline-block; background: #eef2ff; color: #4a6cf7; font-size: .8rem; padding: .2rem .6rem; border-radius: 4px; margin-left: .5rem; }
+</style>
+</head>
+<body>
+<h1>📊 Pesquisas ResearchOS</h1>
+<p class="subtitle" id="subtitle">Carregando...</p>
+<div id="content" class="loading">Carregando dados...</div>
+
+<script>
+async function main() {
+  try {
+    const res = await fetch('/api/surveys')
+    if (!res.ok) throw new Error(`Erro ${res.status}`)
+    const surveys = await res.json()
+
+    if (!surveys.length) {
+      document.getElementById('subtitle').textContent = 'Nenhuma pesquisa encontrada.'
+      document.getElementById('content').innerHTML = '<p class="empty">Nenhum formulário submetido ainda.</p>'
+      return
+    }
+
+    document.getElementById('subtitle').textContent = `${surveys.length} resposta${surveys.length > 1 ? 's' : ''} no total`
+
+    const sections = [
+      { title: 'Perfil do Pesquisador', fields: [
+        { label: 'Área de pesquisa', path: d => d.respondent.researchArea },
+        { label: 'Instituição', path: d => d.respondent.institution },
+        { label: 'Cargo / Função', path: d => d.respondent.role },
+        { label: 'País', path: d => d.respondent.country },
+        { label: 'Experiência', path: d => d.respondent.experience },
+      ]},
+      { title: 'Pesquisa de Campo', fields: [
+        { label: 'Expedições por ano', path: d => d.fieldwork.expeditionsPerYear },
+        { label: 'Método de registro', path: d => d.fieldwork.dataRecordingMethod, multi: true },
+        { label: 'Internet disponível?', path: d => d.fieldwork.internetAvailability },
+        { label: 'Equipamentos', path: d => d.fieldwork.equipment, multi: true },
+      ]},
+      { title: 'Fluxo de Trabalho', fields: [
+        { label: 'Etapa mais demorada', path: d => d.workflow.timeConsumingStage },
+        { label: 'Horas organização', path: d => d.workflow.hoursOrganizingData },
+      ]},
+      { title: 'Organização dos Dados', fields: [
+        { label: 'Ferramentas', path: d => d.data_management.tools, multi: true },
+        { label: 'Organização de arquivos', path: d => d.data_management.fileOrganization },
+      ]},
+      { title: 'Problemas', fields: [
+        { label: 'Tarefa mais demorada', path: d => d.pain_points.timeConsumingTasks },
+        { label: 'Maior dificuldade', path: d => d.pain_points.lastDifficulty },
+        { label: 'Desejo de ferramenta', path: d => d.pain_points.wishedExistence },
+        { label: 'Automatizaria', path: d => d.pain_points.automateTask },
+      ]},
+      { title: 'Colaboração', fields: [
+        { label: 'Tamanho da equipe', path: d => d.collaboration.teamSize },
+        { label: 'Compartilha dados?', path: d => d.collaboration.dataSharing },
+        { label: 'Perdeu arquivos?', path: d => d.collaboration.lostFiles },
+        { label: 'Método de backup', path: d => d.collaboration.backupMethod },
+      ]},
+      { title: 'Inteligência Artificial', fields: [
+        { label: 'Usaria IA para', path: d => d.artificial_intelligence.aiUseCases, multi: true },
+        { label: 'Nunca confiaria', path: d => d.artificial_intelligence.neverTrustAI },
+      ]},
+      { title: 'Entrevista', fields: [
+        { label: 'Disponível para entrevista?', path: d => d.contact.willingToInterview },
+        { label: 'Nome', path: d => d.contact.name },
+        { label: 'E-mail', path: d => d.contact.email },
+        { label: 'Instituição', path: d => d.contact.institution },
+      ]},
+    ]
+
+    const container = document.getElementById('content')
+    container.classList.remove('loading')
+    container.innerHTML = ''
+
+    for (const section of sections) {
+      const secDiv = document.createElement('div')
+      secDiv.className = 'section'
+      secDiv.innerHTML = `<h2>${section.title}</h2><div class="grid"></div>`
+      const grid = secDiv.querySelector('.grid')
+
+      for (const field of section.fields) {
+        const card = document.createElement('div')
+        card.className = 'card'
+        populateCard(card, field, surveys)
+        grid.appendChild(card)
+      }
+
+      container.appendChild(secDiv)
+    }
+  } catch (err) {
+    document.getElementById('content').innerHTML = `<p class="error">Erro ao carregar: ${err.message}</p>`
+  }
+}
+
+function populateCard(card, field, surveys) {
+  if (field.multi) {
+    card.innerHTML = `<h3>${field.label}</h3>`
+    const counts = {}
+    let total = 0
+    for (const s of surveys) {
+      const vals = field.path(s)
+      if (Array.isArray(vals) && vals.length) {
+        for (const v of vals) {
+          const k = v.trim()
+          if (k) { counts[k] = (counts[k] || 0) + 1; total++ }
+        }
+      }
+    }
+    renderTable(card, counts, total)
+  } else {
+    const counts = {}
+    let total = 0
+    for (const s of surveys) {
+      let v = field.path(s)
+      if (typeof v === 'string') v = v.trim()
+      if (v) { counts[v] = (counts[v] || 0) + 1; total++ }
+    }
+    card.innerHTML = `<h3>${field.label}</h3>`
+    renderTable(card, counts, total)
+  }
+}
+
+function renderTable(container, counts, total) {
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1])
+  if (!sorted.length) {
+    container.innerHTML += '<p class="empty" style="padding:1rem 0">Nenhuma resposta</p>'
+    return
+  }
+  const maxCount = sorted[0][1]
+  let html = '<table><thead><tr><th>Valor</th><th>%</th><th>Contagem</th></tr></thead><tbody>'
+  for (const [value, count] of sorted) {
+    const pct = total > 0 ? ((count / total) * 100).toFixed(1) : 0
+    const barW = maxCount > 0 ? (count / maxCount) * 100 : 0
+    html += `<tr>
+      <td>${esc(value)}</td>
+      <td class="num"><div class="bar-wrap"><div class="bar" style="width:${barW}%"></div></div>${pct}%</td>
+      <td class="num">${count}</td>
+    </tr>`
+  }
+  html += '</tbody></table>'
+  container.innerHTML += html
+}
+
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+main()
+</script>
+</body>
+</html>
