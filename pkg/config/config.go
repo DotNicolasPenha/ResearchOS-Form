@@ -10,6 +10,7 @@ type Config struct {
 	Port            string
 	DatabaseURL     string
 	CORSOrigin      string
+	SurveysAPIKey   string
 	RateLimitReq    int
 	RateLimitWindow time.Duration
 	BodyLimit       int64
@@ -38,6 +39,7 @@ func Load() (*Config, error) {
 		Port:            ":" + port,
 		DatabaseURL:     getEnv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/surveys?sslmode=disable"),
 		CORSOrigin:      getEnv("CORS_ORIGIN", "http://localhost:4321"),
+		SurveysAPIKey:   getEnv("SURVEYS_API_KEY", ""),
 		RateLimitReq:    rateLimitReqs,
 		RateLimitWindow: rateLimitWindow,
 		BodyLimit:       bodyLimitMB * 1024 * 1024,
