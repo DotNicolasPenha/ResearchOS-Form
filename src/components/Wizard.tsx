@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { useSurveyStore } from '../store/useSurveyStore'
-import { submitSurvey } from '../services/api'
+import { submitSurvey, ApiError } from '../services/api'
 import { ProgressBar } from './ProgressBar'
 import { Stepper } from './Stepper'
 import { WelcomeScreen } from '../screens/WelcomeScreen'
@@ -62,7 +62,15 @@ export function Wizard() {
       await submitSurvey(completed)
       nextStep()
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Erro ao enviar')
+      if (err instanceof ApiError && err.status === 422) {
+        setSubmitError(err.message)
+      } else if (err instanceof DOMException && err.name === 'AbortError') {
+        setSubmitError('O servidor demorou muito para responder. Tente novamente.')
+      } else if (err instanceof TypeError && err.message === 'Failed to fetch') {
+        setSubmitError('Não foi possível conectar ao servidor. Verifique sua internet.')
+      } else {
+        setSubmitError(err instanceof Error ? err.message : 'Erro ao enviar')
+      }
     } finally {
       setSubmitting(false)
     }
