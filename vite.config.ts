@@ -4,4 +4,10 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: {
+    port: 4321,
+    proxy: {
+      '/send-form': 'http://localhost:8080',
+    },
+  },
 })
