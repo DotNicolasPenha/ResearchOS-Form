@@ -25,7 +25,6 @@ tr:last-child td { border-bottom: none; }
 .empty, .error { text-align: center; padding: 3rem; color: #888; }
 .error { color: #d32f2f; }
 .loading { text-align: center; padding: 3rem; color: #888; }
-.total-badge { display: inline-block; background: #eef2ff; color: #4a6cf7; font-size: .8rem; padding: .2rem .6rem; border-radius: 4px; margin-left: .5rem; }
 </style>
 </head>
 <body>
@@ -34,6 +33,15 @@ tr:last-child td { border-bottom: none; }
 <div id="content" class="loading">Carregando dados...</div>
 
 <script>
+function get(obj, path) {
+  try {
+    const val = path(obj)
+    return val !== undefined && val !== null ? val : undefined
+  } catch {
+    return undefined
+  }
+}
+
 async function main() {
   try {
     const res = await fetch('/api/surveys')
@@ -48,55 +56,58 @@ async function main() {
 
     document.getElementById('subtitle').textContent = `${surveys.length} resposta${surveys.length > 1 ? 's' : ''} no total`
 
+    const p = d => d.payload
     const sections = [
       { title: 'Perfil do Pesquisador', fields: [
-        { label: 'Área de pesquisa', path: d => d.respondent.researchArea },
-        { label: 'Instituição', path: d => d.respondent.institution },
-        { label: 'Cargo / Função', path: d => d.respondent.role },
-        { label: 'País', path: d => d.respondent.country },
-        { label: 'Experiência', path: d => d.respondent.experience },
+        { label: 'Área de pesquisa', path: d => p(d)?.respondent?.researchArea },
+        { label: 'Instituição', path: d => p(d)?.respondent?.institution },
+        { label: 'Cargo / Função', path: d => p(d)?.respondent?.role },
+        { label: 'País', path: d => p(d)?.respondent?.country },
+        { label: 'Experiência', path: d => p(d)?.respondent?.experience },
       ]},
       { title: 'Pesquisa de Campo', fields: [
-        { label: 'Expedições por ano', path: d => d.fieldwork.expeditionsPerYear },
-        { label: 'Método de registro', path: d => d.fieldwork.dataRecordingMethod, multi: true },
-        { label: 'Internet disponível?', path: d => d.fieldwork.internetAvailability },
-        { label: 'Equipamentos', path: d => d.fieldwork.equipment, multi: true },
+        { label: 'Expedições por ano', path: d => p(d)?.fieldwork?.expeditionsPerYear },
+        { label: 'Método de registro', path: d => p(d)?.fieldwork?.dataRecordingMethod, multi: true },
+        { label: 'Internet disponível?', path: d => p(d)?.fieldwork?.internetAvailability },
+        { label: 'Equipamentos', path: d => p(d)?.fieldwork?.equipment, multi: true },
       ]},
       { title: 'Fluxo de Trabalho', fields: [
-        { label: 'Etapa mais demorada', path: d => d.workflow.timeConsumingStage },
-        { label: 'Horas organização', path: d => d.workflow.hoursOrganizingData },
+        { label: 'Etapa mais demorada', path: d => p(d)?.workflow?.timeConsumingStage },
+        { label: 'Horas organização', path: d => p(d)?.workflow?.hoursOrganizingData },
       ]},
       { title: 'Organização dos Dados', fields: [
-        { label: 'Ferramentas', path: d => d.data_management.tools, multi: true },
-        { label: 'Organização de arquivos', path: d => d.data_management.fileOrganization },
+        { label: 'Ferramentas', path: d => p(d)?.data_management?.tools, multi: true },
+        { label: 'Organização de arquivos', path: d => p(d)?.data_management?.fileOrganization },
       ]},
       { title: 'Problemas', fields: [
-        { label: 'Tarefa mais demorada', path: d => d.pain_points.timeConsumingTasks },
-        { label: 'Maior dificuldade', path: d => d.pain_points.lastDifficulty },
-        { label: 'Desejo de ferramenta', path: d => d.pain_points.wishedExistence },
-        { label: 'Automatizaria', path: d => d.pain_points.automateTask },
+        { label: 'Tarefa mais demorada', path: d => p(d)?.pain_points?.timeConsumingTasks },
+        { label: 'Maior dificuldade', path: d => p(d)?.pain_points?.lastDifficulty },
+        { label: 'Desejo de ferramenta', path: d => p(d)?.pain_points?.wishedExistence },
+        { label: 'Automatizaria', path: d => p(d)?.pain_points?.automateTask },
       ]},
       { title: 'Colaboração', fields: [
-        { label: 'Tamanho da equipe', path: d => d.collaboration.teamSize },
-        { label: 'Compartilha dados?', path: d => d.collaboration.dataSharing },
-        { label: 'Perdeu arquivos?', path: d => d.collaboration.lostFiles },
-        { label: 'Método de backup', path: d => d.collaboration.backupMethod },
+        { label: 'Tamanho da equipe', path: d => p(d)?.collaboration?.teamSize },
+        { label: 'Compartilha dados?', path: d => p(d)?.collaboration?.dataSharing },
+        { label: 'Perdeu arquivos?', path: d => p(d)?.collaboration?.lostFiles },
+        { label: 'Método de backup', path: d => p(d)?.collaboration?.backupMethod },
       ]},
       { title: 'Inteligência Artificial', fields: [
-        { label: 'Usaria IA para', path: d => d.artificial_intelligence.aiUseCases, multi: true },
-        { label: 'Nunca confiaria', path: d => d.artificial_intelligence.neverTrustAI },
+        { label: 'Usaria IA para', path: d => p(d)?.artificial_intelligence?.aiUseCases, multi: true },
+        { label: 'Nunca confiaria', path: d => p(d)?.artificial_intelligence?.neverTrustAI },
       ]},
       { title: 'Entrevista', fields: [
-        { label: 'Disponível para entrevista?', path: d => d.contact.willingToInterview },
-        { label: 'Nome', path: d => d.contact.name },
-        { label: 'E-mail', path: d => d.contact.email },
-        { label: 'Instituição', path: d => d.contact.institution },
+        { label: 'Disponível para entrevista?', path: d => p(d)?.contact?.willingToInterview },
+        { label: 'Nome', path: d => p(d)?.contact?.name },
+        { label: 'E-mail', path: d => p(d)?.contact?.email },
+        { label: 'Instituição', path: d => p(d)?.contact?.institution },
       ]},
     ]
 
     const container = document.getElementById('content')
     container.classList.remove('loading')
     container.innerHTML = ''
+
+    const warnings = []
 
     for (const section of sections) {
       const secDiv = document.createElement('div')
@@ -107,43 +118,60 @@ async function main() {
       for (const field of section.fields) {
         const card = document.createElement('div')
         card.className = 'card'
-        populateCard(card, field, surveys)
+        const results = computeCounts(field, surveys, warnings)
+        card.innerHTML = `<h3>${field.label}</h3>`
+        renderTable(card, results.counts, results.total)
         grid.appendChild(card)
       }
 
       container.appendChild(secDiv)
+    }
+
+    if (warnings.length) {
+      const w = document.createElement('details')
+      w.style = 'margin-top:1rem;font-size:.8rem;color:#888;cursor:pointer'
+      w.innerHTML = `<summary>${warnings.length} aviso${warnings.length > 1 ? 's' : ''} ao processar dados</summary><pre style="margin-top:.5rem;white-space:pre-wrap">${esc(warnings.join('\n'))}</pre>`
+      container.appendChild(w)
     }
   } catch (err) {
     document.getElementById('content').innerHTML = `<p class="error">Erro ao carregar: ${err.message}</p>`
   }
 }
 
-function populateCard(card, field, surveys) {
-  if (field.multi) {
-    card.innerHTML = `<h3>${field.label}</h3>`
-    const counts = {}
-    let total = 0
-    for (const s of surveys) {
-      const vals = field.path(s)
-      if (Array.isArray(vals) && vals.length) {
-        for (const v of vals) {
-          const k = v.trim()
-          if (k) { counts[k] = (counts[k] || 0) + 1; total++ }
-        }
+function computeCounts(field, surveys, warnings) {
+  const counts = {}
+  let total = 0
+  let skipped = 0
+
+  for (let i = 0; i < surveys.length; i++) {
+    const val = get(surveys[i], field.path)
+
+    if (val === undefined) {
+      skipped++
+      continue
+    }
+
+    if (field.multi) {
+      if (!Array.isArray(val)) {
+        warnings.push(`[${field.label}] survey #${i}: esperava array, recebeu ${typeof val}`)
+        skipped++
+        continue
       }
+      for (const item of val) {
+        const k = String(item).trim()
+        if (k) { counts[k] = (counts[k] || 0) + 1; total++ }
+      }
+    } else {
+      const k = String(val).trim()
+      if (k) { counts[k] = (counts[k] || 0) + 1; total++ }
     }
-    renderTable(card, counts, total)
-  } else {
-    const counts = {}
-    let total = 0
-    for (const s of surveys) {
-      let v = field.path(s)
-      if (typeof v === 'string') v = v.trim()
-      if (v) { counts[v] = (counts[v] || 0) + 1; total++ }
-    }
-    card.innerHTML = `<h3>${field.label}</h3>`
-    renderTable(card, counts, total)
   }
+
+  if (skipped && !warnings.length) {
+    warnings.push(`[${field.label}] ${skipped} resposta${skipped > 1 ? 's' : ''} ignorada${skipped > 1 ? 's' : ''} (campo vazio ou ausente)`)
+  }
+
+  return { counts, total }
 }
 
 function renderTable(container, counts, total) {
@@ -167,7 +195,7 @@ function renderTable(container, counts, total) {
   container.innerHTML += html
 }
 
-function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 
 main()
 </script>

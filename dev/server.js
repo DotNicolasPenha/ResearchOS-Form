@@ -19,8 +19,9 @@ const MIME = {
 
 http.createServer((req, res) => {
   if (req.url === '/api/surveys') {
+    const apiUrl = new URL('/surveys', API_URL)
     const proxyReq = https.request(
-      `${API_URL}/surveys`,
+      apiUrl,
       { method: 'GET', headers: { 'X-API-Key': API_KEY } },
       (proxyRes) => {
         let body = ''
