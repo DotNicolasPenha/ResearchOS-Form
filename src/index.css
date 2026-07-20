@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  --color-primary: #000000;
+  --color-bg: #F5F5F5;
+  --color-card: #FFFFFF;
+  --color-text: #111111;
+  --color-text-secondary: #666666;
+  --color-border: #E0E0E0;
+  --color-success: #22C55E;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input, textarea, select {
+  font-family: inherit;
+}
