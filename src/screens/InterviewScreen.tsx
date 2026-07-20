@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import type { SurveyData } from '../types/survey'
 import { RadioCards } from '../components/RadioCards'
 import { FloatingInput } from '../components/FloatingInput'
 import { NavigationButtons } from '../components/NavigationButtons'
+
+const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/
 
 interface InterviewScreenProps {
   data: SurveyData['contact']
@@ -12,7 +15,17 @@ interface InterviewScreenProps {
 }
 
 export function InterviewScreen({ data, onUpdate, onNext, onBack, submitting }: InterviewScreenProps) {
+  const [emailError, setEmailError] = useState('')
   const isValid = data.willingToInterview
+
+  const handleNext = () => {
+    if (data.willingToInterview === 'yes' && data.email && !emailRegex.test(data.email)) {
+      setEmailError('E-mail inválido')
+      return
+    }
+    setEmailError('')
+    onNext()
+  }
 
   return (
     <div className="px-6 py-4">
@@ -38,9 +51,12 @@ export function InterviewScreen({ data, onUpdate, onNext, onBack, submitting }: 
       <FloatingInput
         label="E-mail (opcional)"
         value={data.email}
-        onChange={v => onUpdate('email', v)}
+        onChange={v => { onUpdate('email', v); setEmailError('') }}
         type="email"
       />
+      {emailError && (
+        <p className="text-red-500 text-sm -mt-3 mb-4">{emailError}</p>
+      )}
       <FloatingInput
         label="Instituição (opcional)"
         value={data.institution}
@@ -49,7 +65,7 @@ export function InterviewScreen({ data, onUpdate, onNext, onBack, submitting }: 
 
       <NavigationButtons
         onBack={onBack}
-        onNext={onNext}
+        onNext={handleNext}
         nextLabel="Enviar"
         nextDisabled={!isValid || submitting}
       />
