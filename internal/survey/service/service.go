@@ -13,6 +13,7 @@ import (
 
 type SurveyRepository interface {
 	Save(ctx context.Context, survey *domain.Survey) error
+	FindAll(ctx context.Context) ([]domain.Survey, error)
 }
 
 type SurveyService struct {
@@ -23,6 +24,10 @@ var ErrValidation = errors.New("validation error")
 
 func NewSurveyService(repo SurveyRepository) *SurveyService {
 	return &SurveyService{repo: repo}
+}
+
+func (s *SurveyService) List(ctx context.Context) ([]domain.Survey, error) {
+	return s.repo.FindAll(ctx)
 }
 
 func (s *SurveyService) Create(ctx context.Context, req *dto.SurveyRequest) error {

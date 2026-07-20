@@ -10,11 +10,16 @@ import (
 )
 
 type mockRepo struct {
-	err error
+	err      error
+	surveys  []domain.Survey
 }
 
 func (m *mockRepo) Save(ctx context.Context, survey *domain.Survey) error {
 	return m.err
+}
+
+func (m *mockRepo) FindAll(ctx context.Context) ([]domain.Survey, error) {
+	return m.surveys, m.err
 }
 
 func validRequest() *dto.SurveyRequest {

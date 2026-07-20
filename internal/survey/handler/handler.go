@@ -7,12 +7,14 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/researchos/survey-api/internal/survey/domain"
 	"github.com/researchos/survey-api/internal/survey/dto"
 	"github.com/researchos/survey-api/internal/survey/service"
 )
 
 type SurveyService interface {
 	Create(ctx context.Context, req *dto.SurveyRequest) error
+	List(ctx context.Context) ([]domain.Survey, error)
 }
 
 type SurveyHandler struct {
@@ -22,6 +24,19 @@ type SurveyHandler struct {
 
 func NewSurveyHandler(service SurveyService, logger *slog.Logger) *SurveyHandler {
 	return &SurveyHandler{service: service, logger: logger}
+}
+
+func (h *SurveyHandler) ListSurveys(w http.ResponseWriter, r *http.Request) {
+	surveys, err := h.service.List(r.Context())
+	if err != nil {
+		h.logger.Error("list surveys", "error", err)
+		writeJSON(w, http.StatusInternalServerError, dto.ErrorResponse{Error: "internal server error"})
+		return
+	}
+	if surveys == nil {
+		surveys = []domain.Survey{}
+	}
+	writeJSON(w, http.StatusOK, surveys)
 }
 
 func (h *SurveyHandler) SendForm(w http.ResponseWriter, r *http.Request) {

@@ -31,3 +31,26 @@ func (r *SurveyRepository) Save(ctx context.Context, survey *domain.Survey) erro
 
 	return nil
 }
+
+func (r *SurveyRepository) FindAll(ctx context.Context) ([]domain.Survey, error) {
+	query := `SELECT id, created_at, payload FROM surveys ORDER BY created_at DESC`
+	rows, err := r.pool.Query(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("query surveys: %w", err)
+	}
+	defer rows.Close()
+
+	var surveys []domain.Survey
+	for rows.Next() {
+		var s domain.Survey
+		var payload []byte
+		if err := rows.Scan(&s.ID, &s.CreatedAt, &payload); err != nil {
+			return nil, fmt.Errorf("scan survey: %w", err)
+		}
+		if err := json.Unmarshal(payload, &s.Payload); err != nil {
+			return nil, fmt.Errorf("unmarshal payload: %w", err)
+		}
+		surveys = append(surveys, s)
+	}
+	return surveys, nil
+}

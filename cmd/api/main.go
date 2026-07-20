@@ -66,6 +66,8 @@ func main() {
 		w.Write([]byte(`{"status":"ok"}`))
 	})
 
+	r.Get("/surveys", surveyHandler.ListSurveys)
+
 	r.With(middleware.RateLimit(cfg.RateLimitReq, cfg.RateLimitWindow)).
 		Post("/send-form", surveyHandler.SendForm)
 
