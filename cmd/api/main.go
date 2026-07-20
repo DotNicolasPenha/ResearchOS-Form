@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
+	"github.com/researchos/survey-api/internal/migrator"
 	"github.com/researchos/survey-api/internal/survey/handler"
 	"github.com/researchos/survey-api/internal/survey/repository"
 	"github.com/researchos/survey-api/internal/survey/service"
@@ -41,9 +42,14 @@ func main() {
 	}
 	defer pool.Close()
 
+	if err := migrator.Run(cfg.DatabaseURL); err != nil {
+		log.Error("run migrations", "error", err)
+		os.Exit(1)
+	}
+
 	surveyRepo := repository.NewSurveyRepository(pool)
 	surveySvc := service.NewSurveyService(surveyRepo)
-	surveyHandler := handler.NewSurveyHandler(surveySvc)
+	surveyHandler := handler.NewSurveyHandler(surveySvc, log)
 
 	r := chi.NewRouter()
 

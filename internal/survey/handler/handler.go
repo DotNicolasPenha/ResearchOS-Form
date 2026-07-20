@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"net/http"
 
 	"github.com/researchos/survey-api/internal/survey/dto"
@@ -16,10 +17,11 @@ type SurveyService interface {
 
 type SurveyHandler struct {
 	service SurveyService
+	logger  *slog.Logger
 }
 
-func NewSurveyHandler(service SurveyService) *SurveyHandler {
-	return &SurveyHandler{service: service}
+func NewSurveyHandler(service SurveyService, logger *slog.Logger) *SurveyHandler {
+	return &SurveyHandler{service: service, logger: logger}
 }
 
 func (h *SurveyHandler) SendForm(w http.ResponseWriter, r *http.Request) {
@@ -33,6 +35,7 @@ func (h *SurveyHandler) SendForm(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, service.ErrValidation) {
 			writeJSON(w, http.StatusUnprocessableEntity, dto.ErrorResponse{Error: err.Error()})
 		} else {
+			h.logger.Error("create survey", "error", err)
 			writeJSON(w, http.StatusInternalServerError, dto.ErrorResponse{Error: "internal server error"})
 		}
 		return
