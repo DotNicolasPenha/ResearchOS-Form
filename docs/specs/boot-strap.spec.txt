@@ -1,0 +1,240 @@
+SPEC — ResearchOS Discovery Form v1
+Objetivo
+
+Descobrir como pesquisadores realmente trabalham, quais são suas maiores dificuldades, quais ferramentas utilizam e onde um software pode economizar mais tempo.
+
+Tempo de resposta: 5–8 minutos.
+
+Design
+Estilo iOS Core
+Visual clean e minimalista
+Layout mobile-first
+Barra de progresso
+Perguntas em etapas (wizard)
+Animações suaves
+Botões grandes
+Cards para seleção
+Campos com floating label
+Salvamento automático (LocalStorage)
+Fluxo
+Boas-vindas
+↓
+Perfil
+↓
+Pesquisa de Campo
+↓
+Fluxo de Trabalho
+↓
+Organização dos Dados
+↓
+Problemas
+↓
+Softwares
+↓
+Colaboração
+↓
+Inteligência Artificial
+↓
+Entrevista
+↓
+Obrigado
+Tela 1 — Boas-vindas
+
+Título:
+
+Help us improve scientific research.
+
+Texto:
+
+Estamos pesquisando como pesquisadores trabalham no dia a dia para desenvolver ferramentas que reduzam tarefas repetitivas e aumentem a produtividade da pesquisa científica.
+
+Sua participação é anônima e levará aproximadamente 5 minutos.
+
+Botão:
+
+Start Survey
+
+Etapa 2 — Perfil
+
+Campos
+
+Área de pesquisa
+Instituição
+Cargo
+País
+Tempo de experiência
+Etapa 3 — Pesquisa de Campo
+
+Perguntas
+
+Quantas expedições você realiza por ano?
+
+Como registra os dados em campo?
+
+Papel
+Planilha
+Aplicativo
+Outro
+
+Durante as expedições você trabalha sem internet?
+
+Nunca
+Algumas horas
+Dias
+Semanas
+
+Quais equipamentos utiliza?
+
+GPS
+Drone
+Tablet
+Celular
+Notebook
+Sensores
+Câmera
+Outro
+Etapa 4 — Fluxo de Trabalho
+
+Pense na sua pesquisa mais recente.
+
+Qual etapa consumiu mais tempo?
+
+Planejamento
+Campo
+Organização
+Limpeza dos dados
+Estatística
+Mapas
+Escrita do artigo
+
+Aproximadamente quantas horas você gastou organizando os dados depois da coleta?
+
+Etapa 5 — Organização dos Dados
+
+Quais ferramentas você utiliza?
+
+Checkbox
+
+Excel
+Google Sheets
+QGIS
+ArcGIS
+R
+Python
+Zotero
+Google Drive
+Dropbox
+Outro
+
+Como você organiza fotos e arquivos da pesquisa?
+
+Resposta longa.
+
+Etapa 6 — Problemas ⭐
+
+Resposta longa
+
+Quais tarefas mais consomem seu tempo?
+
+Resposta longa
+
+Qual foi a maior dificuldade na sua última pesquisa?
+
+Resposta longa
+
+Conte uma situação em que você pensou:
+
+"Isso deveria existir."
+
+Resposta longa
+
+Se pudesse automatizar apenas uma tarefa, qual seria?
+
+Etapa 7 — Colaboração
+
+Quantas pessoas trabalham normalmente no mesmo projeto?
+
+Como compartilham dados?
+
+Já aconteceu de perder arquivos ou versões importantes?
+
+Sim
+Não
+
+Como fazem backup dos dados?
+
+Etapa 8 — Inteligência Artificial
+
+Você utilizaria IA para:
+
+Identificar espécies
+Organizar fotos
+Detectar erros
+Criar mapas
+Gerar gráficos
+Resumir pesquisas
+Encontrar padrões
+Outro
+
+Existe alguma tarefa que você nunca confiaria para uma IA?
+
+Resposta longa.
+
+Etapa 9 — Entrevista
+
+Gostaria de participar de uma conversa rápida quando tivermos um protótipo?
+
+Sim
+Não
+
+Campos opcionais
+
+Nome
+E-mail
+Instituição
+Tela Final
+
+Título
+
+Thank You!
+
+Texto
+
+Sua resposta contribuirá diretamente para o desenvolvimento de ferramentas voltadas à pesquisa científica.
+
+Botão
+
+Submit Survey
+
+Componentes
+Stepper
+Progress Bar
+Cards
+Radio Cards
+Checkbox Cards
+Floating Labels
+Auto Resize TextArea
+Success Screen
+Loading State
+Autosave
+JSON esperado
+metadata
+respondent
+fieldwork
+workflow
+data_management
+pain_points
+collaboration
+artificial_intelligence
+contact
+Objetivo de negócio
+
+O formulário não existe para validar uma ideia, mas para descobrir padrões. Ao analisar dezenas de respostas, procure perguntas como:
+
+Qual problema aparece com mais frequência?
+Qual tarefa mais consome tempo?
+Quais softwares são mais usados?
+Quais processos ainda são feitos manualmente?
+Quais dores são compartilhadas por pesquisadores de diferentes áreas?
+
+Essas respostas devem orientar o MVP do ResearchOS. O foco não é construir muitas funcionalidades, mas resolver primeiro a dor mais recorrente e de maior impacto.

@@ -1,0 +1,375 @@
+Survey API (Go)
+Objetivo
+
+Desenvolva uma API REST em Go para receber respostas de um formulário de pesquisa científica e armazená-las em um banco PostgreSQL.
+
+A API deve ser pequena, simples, segura, bem organizada e pronta para produção, seguindo as melhores práticas do ecossistema Go.
+
+O foco é simplicidade, legibilidade e facilidade de manutenção. Evite qualquer tipo de overengineering.
+
+Stack
+
+Utilize obrigatoriamente:
+
+Go 1.24+
+PostgreSQL
+pgx/v5
+chi (router)
+Docker
+Docker Compose
+golang-migrate
+godotenv (ou configuração equivalente)
+context.Context em todas as operações
+
+Não utilize frameworks pesados.
+
+Arquitetura
+
+Utilize uma Clean Architecture simples e idiomática para Go.
+
+Estrutura esperada:
+
+cmd/
+    api/
+
+internal/
+    survey/
+        domain/
+        dto/
+        handler/
+        service/
+        repository/
+
+pkg/
+    config/
+    database/
+    logger/
+    middleware/
+
+migrations/
+
+Dockerfile
+docker-compose.yml
+Makefile
+.env.example
+README.md
+
+Cada camada deve possuir apenas uma responsabilidade.
+
+Fluxo esperado:
+
+HTTP
+
+↓
+
+Handler
+
+↓
+
+Service
+
+↓
+
+Repository
+
+↓
+
+PostgreSQL
+Banco
+
+Utilizar PostgreSQL.
+
+Criar apenas uma tabela.
+
+surveys
+
+Campos:
+
+id UUID
+
+created_at TIMESTAMP
+
+payload JSONB
+
+O formulário inteiro deve ser salvo na coluna payload (JSONB).
+
+Não dividir o formulário em dezenas de colunas.
+
+JSON recebido
+
+A rota /send-form deve receber exatamente esta estrutura:
+
+export interface SurveyData {
+  metadata: {
+    startedAt: string
+    completedAt: string | null
+  }
+  respondent: {
+    researchArea: string
+    institution: string
+    role: string
+    country: string
+    experience: string
+  }
+  fieldwork: {
+    expeditionsPerYear: string
+    dataRecordingMethod: string[]
+    internetAvailability: string
+    equipment: string[]
+  }
+  workflow: {
+    timeConsumingStage: string
+    hoursOrganizingData: string
+  }
+  data_management: {
+    tools: string[]
+    fileOrganization: string
+  }
+  pain_points: {
+    timeConsumingTasks: string
+    lastDifficulty: string
+    wishedExistence: string
+    automateTask: string
+  }
+  collaboration: {
+    teamSize: string
+    dataSharing: string
+    lostFiles: string
+    backupMethod: string
+  }
+  artificial_intelligence: {
+    aiUseCases: string[]
+    neverTrustAI: string
+  }
+  contact: {
+    willingToInterview: string
+    name: string
+    email: string
+    institution: string
+  }
+}
+Rotas
+
+Criar apenas:
+
+GET  /health
+
+POST /send-form
+
+Nenhuma outra rota.
+
+Configuração
+
+Toda configuração deve ocorrer através do .env.
+
+Exemplo:
+
+PORT=8080
+
+DATABASE_URL=postgres://...
+
+CORS_ORIGIN=http://localhost:4321
+
+RATE_LIMIT_REQUESTS=20
+
+RATE_LIMIT_WINDOW=1m
+
+BODY_LIMIT=2MB
+
+Não quero editar código para configurar a aplicação.
+
+Docker
+
+Criar:
+
+Dockerfile
+docker-compose.yml
+
+O compose deve subir automaticamente:
+
+API
+PostgreSQL
+
+Com apenas:
+
+docker compose up -d
+
+A aplicação já deve funcionar.
+
+Migrations
+
+Utilizar:
+
+golang-migrate
+
+Criar migrations para:
+
+criação da tabela
+criação dos índices necessários
+Segurança
+
+Implementar:
+
+Rate Limit por IP
+CORS configurável
+Graceful Shutdown
+Timeouts HTTP
+Recovery Middleware
+Request ID
+Logging Middleware
+Limite de tamanho do Body
+Validação do JSON recebido
+Validação de e-mail
+Headers básicos de segurança
+Rate Limit
+
+Aplicar apenas na rota:
+
+POST /send-form
+
+Configuração pelo .env.
+
+Logs
+
+Registrar:
+
+Método
+URL
+Status
+Latência
+IP
+Request ID
+
+Sem logs excessivamente verbosos.
+
+Handler
+
+O Handler deve conter apenas:
+
+leitura da requisição
+validação
+chamada do Service
+resposta HTTP
+
+Não colocar regras de negócio.
+
+Service
+
+O Service deve conter toda a regra de negócio.
+
+Exemplo:
+
+validar dados
+montar entidade
+chamar Repository
+Repository
+
+Responsável apenas pelo acesso ao PostgreSQL.
+
+Não colocar regra de negócio.
+
+Utilizar sempre:
+
+ctx context.Context
+Context
+
+Todas as operações devem receber context.Context.
+
+Exemplo:
+
+func (s *Service) Create(ctx context.Context, survey Survey) error
+
+Nunca utilizar context.Background() dentro das camadas da aplicação.
+
+O contexto deve ser propagado desde o Handler até o Repository.
+
+Dependências
+
+Utilizar injeção de dependências por construtores.
+
+Exemplo:
+
+service := survey.NewService(repository)
+
+handler := survey.NewHandler(service)
+
+Evitar singletons e variáveis globais.
+
+Tratamento de erros
+
+Criar erros claros e consistentes.
+
+Responder sempre em JSON.
+
+Exemplos:
+
+{
+    "message": "Survey submitted successfully."
+}
+{
+    "error": "invalid email"
+}
+Qualidade do código
+
+O projeto deve seguir as convenções oficiais da linguagem Go.
+
+Aplicar:
+
+Código idiomático
+gofmt
+Estrutura simples
+Funções pequenas
+Interfaces apenas quando necessárias
+Sem duplicação
+Nomes claros
+Erros encapsulados corretamente
+Uso de errors.Is() e errors.As() quando apropriado
+README
+
+Criar um README objetivo e completo contendo:
+
+Visão geral
+Tecnologias
+Estrutura do projeto
+Como configurar
+Como executar
+Como usar Docker
+Como rodar migrations
+Variáveis .env
+Exemplos com curl
+Exemplo do JSON
+Estrutura das pastas
+Decisões de arquitetura
+O que NÃO implementar
+
+Não adicionar funcionalidades além das solicitadas.
+
+Não implementar:
+
+JWT
+Login
+Usuários
+OAuth
+Redis
+RabbitMQ
+Kafka
+WebSocket
+GraphQL
+gRPC
+Swagger
+OpenAPI
+Cache
+Filas
+Microservices
+Kubernetes
+Observabilidade complexa
+Event Sourcing
+CQRS
+DDD completo
+Objetivo final
+
+Quero um projeto que sirva como template pessoal para APIs simples em Go. O código deve parecer escrito por um desenvolvedor Go experiente, privilegiando simplicidade, clareza, organização e facilidade de manutenção.
+
+A configuração deve exigir apenas alterar o arquivo .env, executar docker compose up -d e utilizar a rota POST /send-form. Nenhuma configuração adicional deve ser necessária.
+
+Importante: antes de gerar qualquer código, faça um planejamento da arquitetura, explique brevemente as decisões (como uma mini ADR) e só então implemente o projeto completo, arquivo por arquivo, seguindo exatamente a estrutura proposta.
