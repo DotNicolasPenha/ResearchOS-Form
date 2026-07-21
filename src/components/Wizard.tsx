@@ -5,6 +5,7 @@ import { submitSurvey, ApiError } from '../services/api'
 import { ProgressBar } from './ProgressBar'
 import { Stepper } from './Stepper'
 import { WelcomeScreen } from '../screens/WelcomeScreen'
+import { OptionalFieldsNoticeScreen } from '../screens/OptionalFieldsNoticeScreen'
 import { ProfileScreen } from '../screens/ProfileScreen'
 import { FieldworkScreen } from '../screens/FieldworkScreen'
 import { WorkflowScreen } from '../screens/WorkflowScreen'
@@ -16,11 +17,11 @@ import { InterviewScreen } from '../screens/InterviewScreen'
 import { ThankYouScreen } from '../screens/ThankYouScreen'
 
 const STEP_LABELS = [
-  'Welcome', 'Profile', 'Fieldwork', 'Workflow',
+  'Welcome', 'Notice', 'Profile', 'Fieldwork', 'Workflow',
   'Data', 'Problems', 'Collab', 'AI', 'Interview', 'Done',
 ]
 
-const TOTAL_SURVEY_STEPS = 9
+const TOTAL_SURVEY_STEPS = 10
 
 export function Wizard() {
   const { data, currentStep, updateField, nextStep, prevStep, goToStep } = useSurveyStore()
@@ -102,6 +103,13 @@ export function Wizard() {
             <>
               {currentStep === 0 && <WelcomeScreen key="welcome" onNext={nextStep} />}
               {currentStep === 1 && (
+                <OptionalFieldsNoticeScreen
+                  key="notice"
+                  onNext={nextStep}
+                  onBack={prevStep}
+                />
+              )}
+              {currentStep === 2 && (
                 <ProfileScreen
                   key="profile"
                   data={data.respondent}
@@ -110,7 +118,7 @@ export function Wizard() {
                   onBack={prevStep}
                 />
               )}
-              {currentStep === 2 && (
+              {currentStep === 3 && (
                 <FieldworkScreen
                   key="fieldwork"
                   data={data.fieldwork}
@@ -119,7 +127,7 @@ export function Wizard() {
                   onBack={prevStep}
                 />
               )}
-              {currentStep === 3 && (
+              {currentStep === 4 && (
                 <WorkflowScreen
                   key="workflow"
                   data={data.workflow}
@@ -128,7 +136,7 @@ export function Wizard() {
                   onBack={prevStep}
                 />
               )}
-              {currentStep === 4 && (
+              {currentStep === 5 && (
                 <DataManagementScreen
                   key="data"
                   data={data.data_management}
@@ -137,7 +145,7 @@ export function Wizard() {
                   onBack={prevStep}
                 />
               )}
-              {currentStep === 5 && (
+              {currentStep === 6 && (
                 <PainPointsScreen
                   key="pain"
                   data={data.pain_points}
@@ -146,7 +154,7 @@ export function Wizard() {
                   onBack={prevStep}
                 />
               )}
-              {currentStep === 6 && (
+              {currentStep === 7 && (
                 <CollaborationScreen
                   key="collab"
                   data={data.collaboration}
@@ -155,7 +163,7 @@ export function Wizard() {
                   onBack={prevStep}
                 />
               )}
-              {currentStep === 7 && (
+              {currentStep === 8 && (
                 <AIScreen
                   key="ai"
                   data={data.artificial_intelligence}
@@ -164,7 +172,7 @@ export function Wizard() {
                   onBack={prevStep}
                 />
               )}
-              {currentStep === 8 && (
+              {currentStep === 9 && (
                 <InterviewScreen
                   key="interview"
                   data={data.contact}

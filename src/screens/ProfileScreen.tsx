@@ -18,8 +18,7 @@ export function ProfileScreen({ data, onUpdate, onNext, onBack }: ProfileScreenP
   return (
     <div className="px-6 py-4">
       <h2 className="text-xl font-bold text-text mb-1">Seu Perfil</h2>
-      <p className="text-text-secondary text-sm mb-2">Conte-nos sobre sua trajetória na pesquisa</p>
-      <p className="text-text-secondary text-xs mb-6 italic">Obrigado por dedicar seu tempo. Campos opcionais são um agradecimento — responda só o que quiser.</p>
+      <p className="text-text-secondary text-sm mb-6">Conte-nos sobre sua trajetória na pesquisa</p>
 
       <FloatingInput
         label="Área de pesquisa"

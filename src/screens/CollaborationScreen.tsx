@@ -18,8 +18,7 @@ export function CollaborationScreen({ data, onUpdate, onNext, onBack }: Collabor
   return (
     <div className="px-6 py-4">
       <h2 className="text-xl font-bold text-text mb-1">Colaboração</h2>
-      <p className="text-text-secondary text-sm mb-2">Como você trabalha em equipe?</p>
-      <p className="text-text-secondary text-xs mb-6 italic">Obrigado por dedicar seu tempo. Campos opcionais são um agradecimento — responda só o que quiser.</p>
+      <p className="text-text-secondary text-sm mb-6">Como você trabalha em equipe?</p>
 
       <div className="mb-6">
         <label className="block text-sm font-medium text-text mb-2">

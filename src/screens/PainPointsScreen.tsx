@@ -13,8 +13,7 @@ export function PainPointsScreen({ data, onUpdate, onNext, onBack }: PainPointsS
   return (
     <div className="px-6 py-4">
       <h2 className="text-xl font-bold text-text mb-1">Problemas</h2>
-      <p className="text-text-secondary text-sm mb-2">Quais são suas maiores dificuldades?</p>
-      <p className="text-text-secondary text-xs mb-6 italic">Obrigado por dedicar seu tempo. Campos opcionais são um agradecimento — responda só o que quiser.</p>
+      <p className="text-text-secondary text-sm mb-6">Quais são suas maiores dificuldades?</p>
 
       <AutoResizeTextarea
         label="Quais tarefas mais consomem seu tempo?"
