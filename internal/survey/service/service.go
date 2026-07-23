@@ -14,6 +14,7 @@ import (
 type SurveyRepository interface {
 	Save(ctx context.Context, survey *domain.Survey) error
 	FindAll(ctx context.Context) ([]domain.Survey, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type SurveyService struct {
@@ -28,6 +29,14 @@ func NewSurveyService(repo SurveyRepository) *SurveyService {
 
 func (s *SurveyService) List(ctx context.Context) ([]domain.Survey, error) {
 	return s.repo.FindAll(ctx)
+}
+
+func (s *SurveyService) Delete(ctx context.Context, idStr string) error {
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		return fmt.Errorf("invalid id: %w", err)
+	}
+	return s.repo.Delete(ctx, id)
 }
 
 func (s *SurveyService) Create(ctx context.Context, req *dto.SurveyRequest) error {

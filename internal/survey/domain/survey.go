@@ -1,10 +1,13 @@
 package domain
 
 import (
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
 )
+
+var ErrNotFound = errors.New("survey not found")
 
 type Survey struct {
 	ID        uuid.UUID  `json:"id"`

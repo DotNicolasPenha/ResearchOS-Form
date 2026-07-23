@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/researchos/survey-api/internal/survey/domain"
 )
@@ -29,6 +30,18 @@ func (r *SurveyRepository) Save(ctx context.Context, survey *domain.Survey) erro
 		return fmt.Errorf("insert survey: %w", err)
 	}
 
+	return nil
+}
+
+func (r *SurveyRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	query := `DELETE FROM surveys WHERE id = $1`
+	tag, err := r.pool.Exec(ctx, query, id)
+	if err != nil {
+		return fmt.Errorf("delete survey: %w", err)
+	}
+	if tag.RowsAffected() == 0 {
+		return domain.ErrNotFound
+	}
 	return nil
 }
 

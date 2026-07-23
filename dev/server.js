@@ -43,6 +43,33 @@ http.createServer((req, res) => {
     return
   }
 
+  const surveysMatch = req.url.match(/^\/api\/surveys\/([a-f0-9-]+)$/)
+  if (surveysMatch && req.method === 'DELETE') {
+    const id = surveysMatch[1]
+    const apiUrl = new URL(`/surveys/${id}`, API_URL)
+    const proxyReq = https.request(
+      apiUrl,
+      { method: 'DELETE', headers: { 'X-API-Key': API_KEY } },
+      (proxyRes) => {
+        let body = ''
+        proxyRes.on('data', c => body += c)
+        proxyRes.on('end', () => {
+          res.writeHead(proxyRes.statusCode, {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+          })
+          res.end(body)
+        })
+      },
+    )
+    proxyReq.on('error', () => {
+      res.writeHead(502, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ error: 'proxy error' }))
+    })
+    proxyReq.end()
+    return
+  }
+
   const filePath = path.join(DEV_DIR, req.url === '/' ? 'stats.html' : req.url)
   const ext = path.extname(filePath)
 

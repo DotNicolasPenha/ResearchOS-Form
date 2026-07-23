@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/researchos/survey-api/internal/survey/dto"
 	"github.com/researchos/survey-api/internal/survey/domain"
 )
@@ -12,6 +13,7 @@ import (
 type mockRepo struct {
 	err      error
 	surveys  []domain.Survey
+	deleteID uuid.UUID
 }
 
 func (m *mockRepo) Save(ctx context.Context, survey *domain.Survey) error {
@@ -20,6 +22,16 @@ func (m *mockRepo) Save(ctx context.Context, survey *domain.Survey) error {
 
 func (m *mockRepo) FindAll(ctx context.Context) ([]domain.Survey, error) {
 	return m.surveys, m.err
+}
+
+func (m *mockRepo) Delete(ctx context.Context, id uuid.UUID) error {
+	if m.err != nil {
+		return m.err
+	}
+	if m.deleteID != uuid.Nil && m.deleteID != id {
+		return domain.ErrNotFound
+	}
+	return nil
 }
 
 func validRequest() *dto.SurveyRequest {
@@ -107,6 +119,38 @@ func TestCreate_ValidEmail(t *testing.T) {
 	err := svc.Create(context.Background(), req)
 	if err != nil {
 		t.Fatalf("expected nil, got %v", err)
+	}
+}
+
+func TestDelete_ValidID_Success(t *testing.T) {
+	svc := NewSurveyService(&mockRepo{})
+	err := svc.Delete(context.Background(), uuid.New().String())
+	if err != nil {
+		t.Fatalf("expected nil, got %v", err)
+	}
+}
+
+func TestDelete_InvalidUUID(t *testing.T) {
+	svc := NewSurveyService(&mockRepo{})
+	err := svc.Delete(context.Background(), "not-a-uuid")
+	if err == nil {
+		t.Fatal("expected error for invalid UUID")
+	}
+}
+
+func TestDelete_NotFound(t *testing.T) {
+	svc := NewSurveyService(&mockRepo{deleteID: uuid.MustParse("00000000-0000-0000-0000-000000000001")})
+	err := svc.Delete(context.Background(), uuid.New().String())
+	if !errors.Is(err, domain.ErrNotFound) {
+		t.Fatalf("expected ErrNotFound, got %v", err)
+	}
+}
+
+func TestDelete_RepoError(t *testing.T) {
+	svc := NewSurveyService(&mockRepo{err: errors.New("db down")})
+	err := svc.Delete(context.Background(), uuid.New().String())
+	if err == nil || errors.Is(err, domain.ErrNotFound) {
+		t.Fatal("expected non-not-found error")
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/researchos/survey-api/internal/survey/domain"
 	"github.com/researchos/survey-api/internal/survey/dto"
 	"github.com/researchos/survey-api/internal/survey/service"
@@ -15,6 +16,7 @@ import (
 type SurveyService interface {
 	Create(ctx context.Context, req *dto.SurveyRequest) error
 	List(ctx context.Context) ([]domain.Survey, error)
+	Delete(ctx context.Context, id string) error
 }
 
 type SurveyHandler struct {
@@ -37,6 +39,20 @@ func (h *SurveyHandler) ListSurveys(w http.ResponseWriter, r *http.Request) {
 		surveys = []domain.Survey{}
 	}
 	writeJSON(w, http.StatusOK, surveys)
+}
+
+func (h *SurveyHandler) DeleteSurvey(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if err := h.service.Delete(r.Context(), id); err != nil {
+		if errors.Is(err, domain.ErrNotFound) {
+			writeJSON(w, http.StatusNotFound, dto.ErrorResponse{Error: "survey not found"})
+		} else {
+			h.logger.Error("delete survey", "error", err)
+			writeJSON(w, http.StatusInternalServerError, dto.ErrorResponse{Error: "internal server error"})
+		}
+		return
+	}
+	writeJSON(w, http.StatusOK, dto.SuccessResponse{Message: "Survey deleted successfully."})
 }
 
 func (h *SurveyHandler) SendForm(w http.ResponseWriter, r *http.Request) {

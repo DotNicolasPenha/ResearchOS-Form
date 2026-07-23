@@ -67,6 +67,7 @@ func main() {
 	})
 
 	r.With(middleware.APIKeyAuth(cfg.SurveysAPIKey)).Get("/surveys", surveyHandler.ListSurveys)
+	r.With(middleware.APIKeyAuth(cfg.SurveysAPIKey)).Delete("/surveys/{id}", surveyHandler.DeleteSurvey)
 
 	r.With(middleware.RateLimit(cfg.RateLimitReq, cfg.RateLimitWindow)).
 		Post("/send-form", surveyHandler.SendForm)
